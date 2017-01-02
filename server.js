@@ -33,7 +33,7 @@ app.get('/profile',
     var secrets = auth.twitter.secrets;
     console.log(auth.twitter.secrets);
       secrets.oauth.get(
-      "https://api.twitter.com/1.1/followers/ids",
+      "https://api.twitter.com/1.1/friends/ids.json",
       secrets.token,
       secrets.tokenSecret,
       function(error, data, res) {
