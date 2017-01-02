@@ -1,7 +1,6 @@
 module.exports = function (db) {
   
   var passport = require('passport');
-  var local = require('./local')(passport, db);
   var twitter = require('./twitter')(passport, db);
   require('./sessions')(passport, db);
   
@@ -20,7 +19,6 @@ module.exports = function (db) {
         });
   
       // setup the routes necessary for each provider
-      local.routes(app);
       twitter.routes(app);
       
       // list the json of each user in the system (including passwords for local users)

@@ -26,8 +26,28 @@ app.get('/',
     res.render('index.html', { title: 'Welcome', user: req.user });
   });
 
-
 app.get('/profile',
+  require('connect-ensure-login').ensureLoggedIn(),
+  function (req, res) {
+    var secrets = auth.twitter.secrets;
+    secrets.oauth.get(
+      "https://api.twitter.com/1.1/friends/ids.json",
+      secrets.token,
+      secrets.tokenSecret,
+      function(error, data, res) {
+        if(error) {
+          console.log(require('sys').inspect(res));
+          console.log(require('sys').inspect(error));
+          console.log(data);
+        }
+        else { 
+          console.log(data);
+        }
+      }
+    )
+  });
+
+app.get('/users.json',
   require('connect-ensure-login').ensureLoggedIn(),
   function(req, res){
     var secrets = auth.twitter.secrets;
@@ -47,7 +67,6 @@ app.get('/profile',
         }
       }
     )
-    res.render('profile.html', { title: 'Profile', user: req.user });
   });
 
 require('./default-handlers')(app);
