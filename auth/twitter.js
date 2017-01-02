@@ -2,13 +2,14 @@ var OAuth = require('oauth');
 
 module.exports = function(passport, db) {
   var secrets = {};
-  var oauth = new OAuth.OAuth2(
+  var oauth = new OAuth.OAuth(
+    'https://api.twitter.com/oauth/request_token',
+    'https://api.twitter.com/oauth/access_token',
     process.env.TWITTER_CONSUMER_KEY,
     process.env.TWITTER_CONSUMER_SECRET,
-       'https://api.twitter.com/', 
-       null,
-       'oauth2/token', 
-       null
+    '1.0A',
+    process.env.PROJECT_URL + '/login/twitter/return',
+    'HMAC-SHA1'
 );
   
   var Strategy = require('passport-twitter').Strategy,
