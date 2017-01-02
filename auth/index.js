@@ -6,6 +6,7 @@ module.exports = function (db) {
   require('./sessions')(passport, db);
   
   return {
+    twitter: twitter,
     init: function(app) {
       
       // Initialize Passport and restore authentication state, if any, from the

@@ -29,6 +29,7 @@ app.get('/',
 app.get('/profile',
   require('connect-ensure-login').ensureLoggedIn(),
   function(req, res){
+    console.log(auth.twitter.secrets);
     res.render('profile.html', { title: 'Profile', user: req.user });
   });
 

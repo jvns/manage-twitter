@@ -1,4 +1,16 @@
+var OAuth = require('oauth');
+
 module.exports = function(passport, db) {
+  var secrets = {};
+  var oauth = new OAuth.OAuth(
+    'https://api.twitter.com/oauth/request_token',
+    'https://api.twitter.com/oauth/access_token',
+    process.env.TWITTER_CONSUMER_KEY,
+    process.env.TWITTER_CONSUMER_SECRET,
+    '1.1',
+    process.env.PROJECT_URL + '/login/twitter/return',
+    'HMAC-SHA1'
+);
   
   var Strategy = require('passport-twitter').Strategy,
       path = '/login/twitter',
@@ -23,13 +35,18 @@ module.exports = function(passport, db) {
       includeEntities: false
     },
     function(token, tokenSecret, profile, cb) {
-      console.log(profile);
+      secrets.token = token;
+      secrets.tokenSecret = tokenSecret;
+      console.log("token: ", token, tokenSecret)
+//      console.log(profile);
       db.users.findOrCreate(profile, function (err, user) {
         return cb(err, user);
       });
     }));
 
   return {
+    secrets: secrets,
+    oauth: oauth,
     routes: function(app) {
       
       app.get(path,
