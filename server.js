@@ -26,18 +26,25 @@ app.get('/',
     res.render('index.html', { title: 'Welcome', user: req.user });
   });
 
+
 app.get('/profile',
   require('connect-ensure-login').ensureLoggedIn(),
   function(req, res){
-    var oauth = auth.twitter.oauth;
     var secrets = auth.twitter.secrets;
     console.log(auth.twitter.secrets);
-        oauth.get(
-      "https://api.twitter.com/1.1/statuses/home_timeline",
+      secrets.oauth.get(
+      "https://api.twitter.com/1.1/followers/ids",
       secrets.token,
       secrets.tokenSecret,
       function(error, data, res) {
-        console.log("timeline data", error, data, res)
+        if(error) {
+          console.log(require('sys').inspect(res));
+          console.log(require('sys').inspect(error));
+          console.log(data);
+        }
+        else { 
+          console.log(data);
+        }
       }
     )
     res.render('profile.html', { title: 'Profile', user: req.user });

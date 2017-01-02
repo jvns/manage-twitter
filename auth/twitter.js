@@ -2,16 +2,6 @@ var OAuth = require('oauth');
 
 module.exports = function(passport, db) {
   var secrets = {};
-  var oauth = new OAuth.OAuth(
-    'https://api.twitter.com/oauth/request_token',
-    'https://api.twitter.com/oauth/access_token',
-    process.env.TWITTER_CONSUMER_KEY,
-    process.env.TWITTER_CONSUMER_SECRET,
-    '1.0A',
-    process.env.PROJECT_URL + '/login/twitter/return',
-    'HMAC-SHA1'
-);
-  
   var Strategy = require('passport-twitter').Strategy,
       path = '/login/twitter',
       returnPath = path + '/return';
@@ -38,6 +28,7 @@ module.exports = function(passport, db) {
       secrets.token = token;
       secrets.tokenSecret = tokenSecret;
       console.log("token: ", token, tokenSecret)
+      secrets.oauth = this._oauth;
 //      console.log(profile);
       db.users.findOrCreate(profile, function (err, user) {
         return cb(err, user);
@@ -46,11 +37,11 @@ module.exports = function(passport, db) {
 
   return {
     secrets: secrets,
-    oauth: oauth,
     routes: function(app) {
       
       app.get(path,
-        passport.authenticate('twitter'));
+        passport.authenticate('twitter')
+      );
       
       app.get(returnPath, 
         passport.authenticate('twitter', { failureRedirect: '/login' }),
