@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <a href="/">
+  <h1>
+    Example Authentication App using Passport
+  </h1>
+{% endblock %}
+
+{% block content %}
+<div>
+  {% if user %}
+  <p>Hello {{user.displayName}}! Click here to see your full <a href="/profile">profile</a>.</p>
+  <p>Click here to <a href="/logout">logout</a></p>
+  {% else %}
+  <p>This application demponstrates an app with multiple authentication sources.</p>
+  <p>Click here to <a href="/login">login</a>!</p>
+  {% endif %}
+</div>
+{% endblock %}

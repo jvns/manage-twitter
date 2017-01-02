@@ -1,0 +1,51 @@
+<!-- view template -->
+<!-- called from your routes in server.js -->
+
+<!-- templating docs: http://mozilla.github.io/nunjucks/ -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{title}}</title>
+    <meta name="description" content="A cool thing made with HyperWeb">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      footer {
+        margin-top: 50px;
+        padding-top: 25px;
+        border-top: 1px solid lightgrey;
+      }
+      footer > a {
+        color: #BBBBBB;
+      }
+    </style>    
+  </head>
+  <body>
+    <header>
+      {% block header %}
+      <!-- override 'block header' in your template -->
+      {% endblock %}
+    </header>
+    <hr>
+    {% block content %}
+    <!-- override 'block content' in your template -->
+    {% endblock %}
+    
+    {% block scripts %}
+    <!-- override 'block scripts' in your template -->
+    {% endblock %}
+  <footer>
+    <p>
+      <a href="https://gomix.com/#!/remix/turn-off-retweets/0d184ee3-fd8d-4b94-acf4-b4e686e57375">
+        <img src="https://gomix.com/images/background-light/remix-on-gomix.svg">
+      </a>
+    </p>
+    <p>
+      <a href="https://gomix.com/#!/project/turn-off-retweets">
+        View Code
+      </a>
+    </p>
+  </footer>      
+  </body>
+</html>

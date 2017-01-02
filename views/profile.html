@@ -1,0 +1,16 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<p>
+ID: {{ user.id }}<br/>
+Provider: {{ user.provider }}<br/>
+{% if user.username %}
+Username: {{ user.username }}<br/>
+{% endif %}
+Name: {{ user.displayName }}<br/>
+{% for email in user.emails %}
+Email: {{ email.value }}<br/>
+{% endfor %}
+</p>
+<a href="/logout">Logout</a>
+{% endblock %}
