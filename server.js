@@ -29,7 +29,19 @@ app.get('/',
 app.get('/profile',
   require('connect-ensure-login').ensureLoggedIn(),
   function(req, res){
-    console.log(auth.twitter.secrets);
+    var oauth = auth.twitter.oauth;
+    var secrets = auth.twitter.secrets;
+    console.log(secrets.token,
+      secrets.tokenSecret)
+    oauth.get(
+      "https://api.twitter.com/1.1/statuses/home_timeline",
+      secrets.token,
+//      secrets.tokenSecret,
+      function(error, data, res) {
+        console.log("timeline data", error, data, res)
+      }
+    )
+    console.log(secrets);
     res.render('profile.html', { title: 'Profile', user: req.user });
   });
 
