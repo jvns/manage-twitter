@@ -30,6 +30,7 @@ app.get('/profile',
   require('connect-ensure-login').ensureLoggedIn(),
   function(req, res){
     var oauth = auth.twitter.oauth;
+    var secrets = auth.twitter.secrets;
     console.log(auth.twitter.secrets);
         oauth.get(
       "https://api.twitter.com/1.1/statuses/home_timeline",
