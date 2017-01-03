@@ -37,6 +37,22 @@ module.exports = function(passport, db) {
 
   return {
     secrets: secrets,
+    get: function (url, callback) {
+      this.secrets.oauth.get(
+        url,
+        this.secrets.token,
+        this.secrets.tokenSecret,
+        function(error, data, res) {
+          if(error) {
+            console.log(require('sys').inspect(res));
+            console.log(require('sys').inspect(error));
+            console.log(data);
+          }
+          else { 
+            callback(data);
+          }
+        }
+      )},
     routes: function(app) {
       
       app.get(path,

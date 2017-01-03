@@ -28,10 +28,11 @@ app.get('/',
 
 app.get('/profile',
   require('connect-ensure-login').ensureLoggedIn(),
-  function (req, res) {
+  function(req, res){
     var secrets = auth.twitter.secrets;
-    secrets.oauth.get(
-      "https://api.twitter.com/1.1/friends/ids.json",
+    console.log(auth.twitter.secrets);
+      secrets.oauth.get(
+      "https://api.twitter.com/1.1/followers/ids",
       secrets.token,
       secrets.tokenSecret,
       function(error, data, res) {
@@ -45,26 +46,17 @@ app.get('/profile',
         }
       }
     )
+    res.render('profile.html', { title: 'Profile', user: req.user });
   });
 
 app.get('/users.json',
   require('connect-ensure-login').ensureLoggedIn(),
-  function(req, res){
-    var secrets = auth.twitter.secrets;
-    console.log(auth.twitter.secrets);
-      secrets.oauth.get(
+  function (req, res) {
+    var twitter = auth.twitter;
+    secrets.get(
       "https://api.twitter.com/1.1/friends/ids.json",
-      secrets.token,
-      secrets.tokenSecret,
-      function(error, data, res) {
-        if(error) {
-          console.log(require('sys').inspect(res));
-          console.log(require('sys').inspect(error));
-          console.log(data);
-        }
-        else { 
-          console.log(data);
-        }
+      function(data) {
+          res.json(data);
       }
     )
   });
