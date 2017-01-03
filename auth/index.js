@@ -23,7 +23,7 @@ module.exports = function (db) {
       
       // list the json of each user in the system (including passwords for local users)
       app.get('/auth/db/users', function(req, res) {
-        var users = db.users.fetch();
+        var users = db.sqlite.fetch();
         res.render('auth/users.html', {
           title: 'Users',
           users: users.map(function(user) {

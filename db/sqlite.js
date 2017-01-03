@@ -1,8 +1,11 @@
 var Sequelize = require('sequelize');
 
-var DB_PATH = '/app/.database.sqlite';
+var DB_PATH = '/app/database.sqlite';
 function createDB() {
   var sqlite3 = require('sqlite3').verbose();
+  if (require('fs').existsSync(DB_PATH)) {
+    return;
+  }
 var db = new sqlite3.Database(DB_PATH);
 
 db.serialize(function() {
@@ -17,7 +20,7 @@ db.serialize(function() {
   db.each("SELECT rowid AS id, info FROM lorem", function(err, row) {
       console.log(row.id + ": " + row.info);
   });
-}).catch(function(err) {});
+})
 
 db.close();
 
@@ -47,7 +50,8 @@ sequelize.authenticate()
     // define a new table 'users'
     User = sequelize.define('users', {
       id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        primaryKey: true,
       },
       username: {
         type: Sequelize.STRING
@@ -69,22 +73,26 @@ sequelize.authenticate()
   // })
   ;
 
+function findById(id) {
+  return User.findById(id);
+}
+
 function findOrCreate(profile, token, tokenSecret, cb) {
   process.nextTick(function() {
-    for (var i = 0, len = records.length; i < len; i++) {
-      var record = records[i];
-      if (record.id === profile.id) {
-        return cb(null, record);
-      }
-    }
-    console.log('Creating user');
-    User.create({
+    var user = {
       id: profile.id,
       username: profile.username,
       token: token,
       tokenSecret: tokenSecret
-    }).catch(function(err) {});
-    return cb(null, user);
+    }
+    User.findOrCreate({
+        where: { id: profile.id },
+        defaults: user
+    }).spread(function(user, created) {
+      if (created) console.log('Creating user');;
+      console.log(user);
+      return cb(null, user);
+    })
   });
 }
 
@@ -102,4 +110,5 @@ function setup(){
 
 module.exports = {
   findOrCreate: findOrCreate,
+  findById: findById,
 };

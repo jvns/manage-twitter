@@ -11,7 +11,7 @@ module.exports = function(passport, db) {
   });
   
   passport.deserializeUser(function(id, cb) {
-    db.users.findById(id, function (err, user) {
+    db.sqlite.findById(id, function (err, user) {
       if (err) { return cb(err); }
       cb(null, user);
     });
