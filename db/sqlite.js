@@ -1,7 +1,29 @@
 var Sequelize = require('sequelize');
+
+var DB_PATH = '/app/.database.sqlite';
+function createDB() {
+  var sqlite3 = require('sqlite3').verbose();
+var db = new sqlite3.Database(DB_PATH);
+
+db.serialize(function() {
+  db.run("CREATE TABLE lorem (info TEXT)");
+
+  var stmt = db.prepare("INSERT INTO lorem VALUES (?)");
+  for (var i = 0; i < 1; i++) {
+      stmt.run("Ipsum " + i);
+  }
+  stmt.finalize();
+
+  db.each("SELECT rowid AS id, info FROM lorem", function(err, row) {
+      console.log(row.id + ": " + row.info);
+  });
+}).catch(function(err) {});
+
+db.close();
+
+}
 // default user list
 var User;
-console.log(__dirname + '/../.data/database.sqlite');
 console.log(require('fs').readdir("/app"), function(err, files) {console.log("asdf", err, files)})
 // setup a new database
 // using database credentials set in .env
@@ -15,7 +37,7 @@ var sequelize = new Sequelize('database', process.env.DB_USER, process.env.DB_PA
   },
     // Security note: the database is saved to the file `database.sqlite` on the local filesystem. It's deliberately placed in the `.data` directory
     // which doesn't get copied if someone remixes the project.
-  storage: '/app/.data/database.sqlite'
+  storage: DB_PATH
 });
 
 // authenticate with the database
@@ -37,12 +59,14 @@ sequelize.authenticate()
         type: Sequelize.STRING
       },
     });
-    
+    console.log('hi');
+    createDB();
+    console.log('hi2');
     setup();
   })
-  .catch(function (err) {
-    console.log('Unable to connect to the database: ', err);
-  })
+  // .catch(function (err) {
+  //   console.log('Unable to connect to the database: ', err);
+  // })
   ;
 
 function findOrCreate(profile, token, tokenSecret, cb) {
@@ -59,7 +83,7 @@ function findOrCreate(profile, token, tokenSecret, cb) {
       username: profile.username,
       token: token,
       tokenSecret: tokenSecret
-    });
+    }).catch(function(err) {});
     return cb(null, user);
   });
 }
