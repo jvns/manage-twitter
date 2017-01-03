@@ -1,6 +1,25 @@
 {% extends 'index.html' %}
 
 {% block content %}
+<script type="text/javascript">
+  function displayFriends(friends) {
+    console.log(friends);
+  }
+  function main () {
+    var friends = JSON.parse(localStorage.getItem("friends"));
+    displayFriends(friends);
+    if (!friends) {
+      $.get("/users.json", function(resp) {
+        friends = JSON.parse(resp);
+        localStorage.setItem("friends", resp);
+        displayFriends(friends);
+      })
+    }
+  }
+  $( document ).ready(main)
+    
+</script>
+
 <p>
 ID: {{ user.id }}<br/>
 Provider: {{ user.provider }}<br/>
