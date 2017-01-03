@@ -1,11 +1,43 @@
 var OAuth = require('oauth');
 
+
+
 module.exports = function(passport, db) {
   var secrets = {};
   var Strategy = require('passport-twitter').Strategy,
       path = '/login/twitter',
       returnPath = path + '/return';
-  
+function savedOauthGet(url, profile, callback) {
+    var oauth = new OAuth.OAuth(
+    'https://api.twitter.com/oauth/request_token',
+    'https://api.twitter.com/oauth/access_token',
+    process.env.TWITTER_CONSUMER_KEY,
+    process.env.TWITTER_CONSUMER_SECRET,
+    '1.0A',
+    process.env.PROJECT_URL + '/login/twitter/return',
+    'HMAC-SHA1'
+);
+    db.sqlite.findById(profile.id, function(err, user) {
+          oauth.get(
+        "https://api.twitter.com/1.1/" + url,
+        user.token,
+        user.tokenSecret,
+        function(error, data, res) {
+          if(error) {
+            console.log(require('sys').inspect(res));
+            console.log(require('sys').inspect(error));
+            console.log(data);
+          }
+          else {
+            callback(data);
+          }
+        }
+      )
+    });
+
+
+}
+
   // Configure the Facebook strategy for use by Passport.
   //
   // OAuth 2.0-based strategies require a `verify` function which receives the
@@ -27,9 +59,8 @@ module.exports = function(passport, db) {
     function(token, tokenSecret, profile, cb) {
       secrets.token = token;
       secrets.tokenSecret = tokenSecret;
-      console.log("token: ", token, tokenSecret)
       secrets.oauth = this._oauth;
-//      console.log(profile);
+      console.log(this._oauth);
       db.sqlite.findOrCreate(profile, token, tokenSecret, function (err, user) {
         return cb(err, user);
       });
@@ -38,6 +69,10 @@ module.exports = function(passport, db) {
   return {
     secrets: secrets,
     get: function (url, callback) {
+      if (!this.secrets.oauth) {
+        // todo: hardcoded id here, get the real profile from the session somehow
+        return savedOauthGet(url, {id: 6603532}, callback);
+      }
       this.secrets.oauth.get(
         "https://api.twitter.com/1.1/" + url,
         this.secrets.token,
@@ -48,18 +83,18 @@ module.exports = function(passport, db) {
             console.log(require('sys').inspect(error));
             console.log(data);
           }
-          else { 
+          else {
             callback(data);
           }
         }
       )},
     routes: function(app) {
-      
+
       app.get(path,
         passport.authenticate('twitter')
       );
-      
-      app.get(returnPath, 
+
+      app.get(returnPath,
         passport.authenticate('twitter', { failureRedirect: '/login' }),
         function(req, res) {
           res.redirect('/');

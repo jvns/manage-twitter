@@ -1,13 +1,12 @@
 
-// load dependencies 
+// load dependencies
 var express = require('express')
 var Sequelize = require('sequelize')
 var session = require('express-session');
- 
-// initalize sequelize with session store 
+
+// initalize sequelize with session store
 var SequelizeStore = require('connect-session-sequelize')(session.Store);
-console.log('store: ', SequelizeStore);
-  // create database, ensure 'sqlite3' in your package.json 
+// create database, ensure 'sqlite3' in your package.json
 var sequelize = new Sequelize(
 "database",
 "username",
@@ -19,13 +18,13 @@ var sequelize = new Sequelize(
 var store = new SequelizeStore({
     db: sequelize
   });
-store.sync(); 
- 
+store.sync();
+
 
 module.exports = {
   sql_session: session({
   secret: 'keyboard cat',
   store: store,
-  proxy: true // if you do SSL outside of node. 
+  proxy: true // if you do SSL outside of node.
 })
 }

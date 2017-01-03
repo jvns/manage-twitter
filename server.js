@@ -24,7 +24,6 @@ auth.init(app);
 // Define routes.
 app.get('/',
   function(req, res) {
-    console.log(req);
     res.render('index.html', { title: 'Welcome', user: req.user });
   });
 
@@ -37,7 +36,6 @@ app.get('/profile',
 
     //   }
     // );
-    for (var x in req) {console.log(x)}
     res.render('profile.html', { title: 'Profile', user: req.user });
   });
 
@@ -50,7 +48,6 @@ app.get('/users.json',
       function(data) {
           var ids = JSON.parse(data)["ids"];
           ids = ids.slice(0, 99).join(',');
-          console.log(ids);
           twitter.get("users/lookup.json?user_id=" + ids, function(data) {
             res.send(data);
           });
