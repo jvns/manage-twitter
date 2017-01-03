@@ -95,7 +95,7 @@ function savedOauthGet(url, profile, callback) {
       );
 
       app.get(returnPath,
-        passport.authenticate('twitter', { failureRedirect: '/login' }),
+        passport.authenticate('twitter', { failureRedirect: '/login/twitter' }),
         function(req, res) {
           res.redirect('/');
         });
