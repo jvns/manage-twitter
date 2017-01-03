@@ -1,9 +1,43 @@
 {% extends 'index.html' %}
 
 {% block content %}
+
+<p>
+ID: {{ user.id }}<br/>
+Provider: {{ user.provider }}<br/>
+{% if user.username %}
+Username: {{ user.username }}<br/>
+{% endif %}
+Name: {{ user.displayName }}<br/>
+{% for email in user.emails %}
+Email: {{ email.value }}<br/>
+{% endfor %}
+</p>
+
+  <div id="app-4">
+  <ul>
+    <li v-for="friend in friends">
+      <img :src="friend.profile_image_url_https">
+      <a :href="'https://twitter.com/' + friend.screen_name">@${friend.screen_name}</a>
+       -- ${ friend.statuses_count } tweets
+    </li>
+  </ul>
+</div>
+<a href="/logout">Logout</a>
+
 <script type="text/javascript">
+  var app4;
+  Vue.config.delimiters = ['${', '}']
   function displayFriends(friends) {
     console.log(friends);
+    app4 = new Vue({
+  el: '#app-4',
+  delimiters : ['${', '}'],
+  data: {
+    friends: friends,
+  }
+})
+
   }
   function main () {
     var friends = JSON.parse(localStorage.getItem("friends"));
@@ -20,16 +54,4 @@
     
 </script>
 
-<p>
-ID: {{ user.id }}<br/>
-Provider: {{ user.provider }}<br/>
-{% if user.username %}
-Username: {{ user.username }}<br/>
-{% endif %}
-Name: {{ user.displayName }}<br/>
-{% for email in user.emails %}
-Email: {{ email.value }}<br/>
-{% endfor %}
-</p>
-<a href="/logout">Logout</a>
 {% endblock %}
