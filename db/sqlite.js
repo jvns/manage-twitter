@@ -73,8 +73,11 @@ sequelize.authenticate()
   // })
   ;
 
-function findById(id) {
-  return User.findById(id);
+function findById(id, cb) {
+  return User.findById(id).then(function(user){
+    cb(null, user);
+    
+  });
 }
 
 function findOrCreate(profile, token, tokenSecret, cb) {

@@ -3,9 +3,9 @@ module.exports = function (db) {
   var passport = require('passport');
   var twitter = require('./twitter')(passport, db);
   require('./sessions')(passport, db);
-  
   return {
     twitter: twitter,
+    sql_session: require('./sql_session'),
     init: function(app) {
       
       // Initialize Passport and restore authentication state, if any, from the
@@ -13,11 +13,6 @@ module.exports = function (db) {
       app.use(passport.initialize());
       app.use(passport.session());
 
-      app.get('/login',
-        function(req, res){
-          res.render('login.html', { title: 'Login' });
-        });
-  
       // setup the routes necessary for each provider
       twitter.routes(app);
       

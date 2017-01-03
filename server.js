@@ -16,13 +16,15 @@ nunjucks.configure('views', {
 // logging, parsing, and session handling.
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
-app.use(require('express-session')({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false }));
+app.use(auth.sql_session.sql_session);
+//app.use(require('express-session')({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false }));
 
 auth.init(app);
 
 // Define routes.
 app.get('/',
   function(req, res) {
+    console.log(req);
     res.render('index.html', { title: 'Welcome', user: req.user });
   });
 
