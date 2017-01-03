@@ -39,7 +39,7 @@ module.exports = function(passport, db) {
     secrets: secrets,
     get: function (url, callback) {
       this.secrets.oauth.get(
-        url,
+        "https://api.twitter.com/1.1/" + url,
         this.secrets.token,
         this.secrets.tokenSecret,
         function(error, data, res) {
