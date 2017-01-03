@@ -19,7 +19,8 @@ Email: {{ email.value }}<br/>
     <li v-for="friend in friends">
       <img :src="friend.profile_image_url_https">
       <a :href="'https://twitter.com/' + friend.screen_name">@${friend.screen_name}</a>
-       -- ${ friend.statuses_count } tweets
+       -- ${ friend.statuses_count } tweets -- 
+       <span v-if="tweet_counts[friend.screen_name] !== null"> ${tweet_counts[friend.screen_name]} recent</span>
     </li>
   </ul>
 </div>
@@ -27,28 +28,74 @@ Email: {{ email.value }}<br/>
 
 <script type="text/javascript">
   var app4;
+  var tl;
   Vue.config.delimiters = ['${', '}']
-  function displayFriends(friends) {
-    console.log(friends);
+  
+  function groupTimeline(timeline) {
+    var counts = {}
+    for (var i = 0; i < timeline.length; i++) {
+      var tweet = timeline[i];
+      var name = tweet.user.screen_name;
+      if (!counts[name]) {
+        counts[name] = 0;
+      }
+      counts[name] += 1;
+    }
+    console.log(counts);
+    return counts;
+  } 
+  
+  function displayFriends(friends, timeline) {
+    var tweet_counts = groupTimeline(timeline);
+    friends = friends.sort(function (a,b) {
+      var c1 = tweet_counts[a.screen_name];
+      var c2 = tweet_counts[b.screen_name];
+      if (c1 == null) {
+        return 1
+      } else if (c2 == null) {
+        return -1
+      }
+      else if (c1 > c2) {
+        console.log('greater', a.screen_name, b.screen_name);
+        return -1;
+      } else if (c1 < c2) {
+        return 1;
+      } else {
+        return 0;
+      }
+    })
+    console.log(tweet_counts[friends[0].screen_name])
     app4 = new Vue({
   el: '#app-4',
   delimiters : ['${', '}'],
   data: {
     friends: friends,
+    tweet_counts: tweet_counts
   }
 })
 
   }
-  function main () {
-    var friends = JSON.parse(localStorage.getItem("friends"));
-    displayFriends(friends);
-    if (!friends) {
-      $.get("/users.json", function(resp) {
+  
+  function getOrCache(cacheId, url, callback) {
+    var friends = JSON.parse(localStorage.getItem(cacheId));
+    if (friends) {
+      callback(friends);
+    } else {
+      $.get(url, function(resp) {
         friends = JSON.parse(resp);
-        localStorage.setItem("friends", resp);
-        displayFriends(friends);
+        localStorage.setItem(cacheId, resp);
+        callback(friends);
       })
     }
+  }
+  
+  function main () {
+    
+    getOrCache("friends", "/users.json", function (friends) {
+      getOrCache("home_timeline", "/home_timeline.json", function (timeline) {
+        displayFriends(friends, timeline)
+      })
+    })
   }
   $( document ).ready(main)
     

@@ -39,6 +39,18 @@ app.get('/profile',
     res.render('profile.html', { title: 'Profile', user: req.user });
   });
 
+app.get('/home_timeline.json',
+  require('connect-ensure-login').ensureLoggedIn(),
+  function (req, res) {
+    var twitter = auth.twitter;
+    twitter.get(
+      "statuses/home_timeline.json?count=200",
+      function(data) {
+        res.send(data);
+      }
+    )
+  });
+
 app.get('/users.json',
   require('connect-ensure-login').ensureLoggedIn(),
   function (req, res) {
