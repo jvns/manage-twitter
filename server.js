@@ -53,7 +53,7 @@ app.get('/users.json',
   require('connect-ensure-login').ensureLoggedIn(),
   function (req, res) {
     var twitter = auth.twitter;
-    secrets.get(
+    twitter.get(
       "https://api.twitter.com/1.1/friends/ids.json",
       function(data) {
           res.json(data);
