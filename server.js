@@ -51,18 +51,43 @@ app.get('/home_timeline.json',
     )
   });
 
+function getIdBatches(ids) {
+  if (ids.length == 0) {
+    return []
+  } else {
+    var arr =  getIdBatches(ids.slice(100))
+    arr.push(ids.slice(0, 100));
+    return arr
+  }
+}
+
 app.get('/users.json',
   require('connect-ensure-login').ensureLoggedIn(),
   function (req, res) {
     var twitter = auth.twitter;
     twitter.get(
+      
       "friends/ids.json",
       function(data) {
           var ids = JSON.parse(data)["ids"];
-          ids = ids.slice(0, 99).join(',');
-          twitter.get("users/lookup.json?user_id=" + ids, function(data) {
-            res.send(data);
-          });
+          var batches = getIdBatches(ids);
+          var responses = [];
+          var completed_requests = 0;
+          all_users = []
+          console.log(batches);
+          for (var i = 0; i < batches.length; i++) {
+            var batch_ids = batches[i].join(',');
+            twitter.get("users/lookup.json?user_id=" + batch_ids, function(data) {
+              responses = responses.concat(JSON.parse(data));
+              completed_requests++;
+              if (completed_requests == batches.length) {
+                res.send(JSON.stringify(responses));
+              }
+              
+            });
+              
+          }
+          
       }
     )
   });

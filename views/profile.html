@@ -37,7 +37,6 @@ Email: {{ email.value }}<br/>
     for (var i = 0; i < timeline.length; i++) {
       var tweet = timeline[i];
       var name = tweet.user.screen_name;
-      console.log(name);
       if (counts[name] === undefined) {
         counts[name] = 0;
       }
@@ -63,7 +62,7 @@ Email: {{ email.value }}<br/>
       } else {
         return 0;
       }
-    })
+    });
     app4 = new Vue({
   el: '#app-4',
   delimiters : ['${', '}'],
