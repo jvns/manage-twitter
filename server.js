@@ -54,9 +54,14 @@ app.get('/users.json',
   function (req, res) {
     var twitter = auth.twitter;
     twitter.get(
-      "https://api.twitter.com/1.1/friends/ids.json",
+      "friends/ids.json",
       function(data) {
-          res.json(data);
+          var ids = JSON.parse(data)["ids"];
+          ids = ids.slice(0, 99).join(',');
+          console.log(ids);
+          twitter.get("users/lookup.json?user_id=" + ids, function(data) {
+            res.send(data);
+          });
       }
     )
   });
