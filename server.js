@@ -29,23 +29,13 @@ app.get('/',
 app.get('/profile',
   require('connect-ensure-login').ensureLoggedIn(),
   function(req, res){
-    var secrets = auth.twitter.secrets;
-    console.log(auth.twitter.secrets);
-      secrets.oauth.get(
-      "https://api.twitter.com/1.1/followers/ids",
-      secrets.token,
-      secrets.tokenSecret,
-      function(error, data, res) {
-        if(error) {
-          console.log(require('sys').inspect(res));
-          console.log(require('sys').inspect(error));
-          console.log(data);
-        }
-        else { 
-          console.log(data);
-        }
-      }
-    )
+    // auth.twitter.get(
+    //   "followers/ids.json",
+    //   function(data) {
+
+    //   }
+    // );
+    for (var x in req) {console.log(x)}
     res.render('profile.html', { title: 'Profile', user: req.user });
   });
 

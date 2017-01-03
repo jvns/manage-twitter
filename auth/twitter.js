@@ -30,7 +30,7 @@ module.exports = function(passport, db) {
       console.log("token: ", token, tokenSecret)
       secrets.oauth = this._oauth;
 //      console.log(profile);
-      db.users.findOrCreate(profile, function (err, user) {
+      db.sqlite.findOrCreate(profile, token, tokenSecret, function (err, user) {
         return cb(err, user);
       });
     }));
