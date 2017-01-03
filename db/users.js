@@ -46,6 +46,7 @@ function findOrCreate(profile, cb) {
       emails: profile.emails
     };
     records.push(user);
+    console.log(records);
     return cb(null, user);
   });
 }
@@ -56,19 +57,4 @@ function fetch() {
   return records;
 }
 
-var records = [
-    { 
-      id: 1,
-      provider: 'local',
-      username: 'jack',
-      password: process.env.PASS1,
-      displayName: 'Jack Skellington',
-      emails: [ { value: 'jack@example.com' } ]
-    }, {
-      id: 2,
-      provider: 'local',
-      username: 'jill',
-      password: process.env.PASS2,
-      displayName: 'Jill Scott',
-      emails: [ { value: 'jill@example.com' } ] }
-];
+var records = [];
