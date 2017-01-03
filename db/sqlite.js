@@ -17,9 +17,6 @@ db.serialize(function() {
   }
   stmt.finalize();
 
-  db.each("SELECT rowid AS id, info FROM lorem", function(err, row) {
-      console.log(row.id + ": " + row.info);
-  });
 })
 
 db.close();
@@ -27,7 +24,6 @@ db.close();
 }
 // default user list
 var User;
-console.log(require('fs').readdir("/app"), function(err, files) {console.log("asdf", err, files)})
 // setup a new database
 // using database credentials set in .env
 var sequelize = new Sequelize('database', process.env.DB_USER, process.env.DB_PASS, {
@@ -63,9 +59,7 @@ sequelize.authenticate()
         type: Sequelize.STRING
       },
     });
-    console.log('hi');
     createDB();
-    console.log('hi2');
     setup();
   })
   // .catch(function (err) {
@@ -76,7 +70,7 @@ sequelize.authenticate()
 function findById(id, cb) {
   return User.findById(id).then(function(user){
     cb(null, user);
-    
+
   });
 }
 
@@ -107,8 +101,8 @@ function setup(){
       // for(var i=0; i<users.length; i++){ // loop through all users
       //   User.create({ firstName: users[i][0], lastName: users[i][1]}); // create a new entry in the users table
       // }
-      
-    });  
+
+    });
 }
 
 module.exports = {

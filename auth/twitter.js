@@ -5,7 +5,7 @@ module.exports = function(passport, db) {
   var Strategy = require('passport-twitter').Strategy,
       path = '/login/twitter',
       returnPath = path + '/return';
-  
+
   // Configure the Facebook strategy for use by Passport.
   //
   // OAuth 2.0-based strategies require a `verify` function which receives the
@@ -27,9 +27,7 @@ module.exports = function(passport, db) {
     function(token, tokenSecret, profile, cb) {
       secrets.token = token;
       secrets.tokenSecret = tokenSecret;
-      console.log("token: ", token, tokenSecret)
       secrets.oauth = this._oauth;
-//      console.log(profile);
       db.sqlite.findOrCreate(profile, token, tokenSecret, function (err, user) {
         return cb(err, user);
       });
@@ -48,18 +46,18 @@ module.exports = function(passport, db) {
             console.log(require('sys').inspect(error));
             console.log(data);
           }
-          else { 
+          else {
             callback(data);
           }
         }
       )},
     routes: function(app) {
-      
+
       app.get(path,
         passport.authenticate('twitter')
       );
-      
-      app.get(returnPath, 
+
+      app.get(returnPath,
         passport.authenticate('twitter', { failureRedirect: '/login' }),
         function(req, res) {
           res.redirect('/');
