@@ -93,6 +93,11 @@ function savedOauthGet(url, profile, callback) {
       app.get(path,
         passport.authenticate('twitter')
       );
+      
+      app.get('/login', function(req, res) {
+        
+      });
+      
 
       app.get(returnPath,
         passport.authenticate('twitter', { failureRedirect: '/login/twitter' }),
@@ -102,3 +107,4 @@ function savedOauthGet(url, profile, callback) {
     }
   };
 };
+
