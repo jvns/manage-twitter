@@ -56,10 +56,19 @@ app.get('/update_friendship',
   require('connect-ensure-login').ensureLoggedIn(),
   function (req, res) {
     var twitter = auth.twitter;
+    var postData = {'screen_name' : req.query.screen_name};
+    var queryString = "?screen_name=" + req.query.screen_name
+    if (req.query.retweets == 'true') {
+      queryString += "&retweets=true"
+    }
+    if (req.query.retweets == 'false') {
+      queryString += "&retweets=false"
+    }
+    console.log(postData);
     //req.query['retweets']
     twitter.post(
-      "friendships/update.json",
-      req.query,
+      "friendships/update.json" + queryString,
+      {},
       function(data) {
         res.send(data);
       }
