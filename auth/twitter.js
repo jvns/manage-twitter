@@ -35,7 +35,7 @@ function savedOauthGet(url, profile, callback) {
     'HMAC-SHA1'
 );
     db.sqlite.findById(profile.id, function(err, user) {
-
+      oauthGet(oauth, url, user.token, user.tokenSecret, callback);
     });
 
 
@@ -76,21 +76,8 @@ function savedOauthGet(url, profile, callback) {
         // todo: hardcoded id here, get the real profile from the session somehow
         return savedOauthGet(url, {id: 6603532}, callback);
       }
-      this.secrets.oauth.get(
-        "https://api.twitter.com/1.1/" + url,
-        this.secrets.token,
-        this.secrets.tokenSecret,
-        function(error, data, res) {
-          if(error) {
-            console.log(require('sys').inspect(res));
-            console.log(require('sys').inspect(error));
-            console.log(data);
-          }
-          else {
-            callback(data);
-          }
-        }
-      )},
+      oauthGet(this.secrets.oauth, url, this.secrets.token, this.secrets.tokenSecret, callback);
+    },
     routes: function(app) {
 
       app.get(path,
