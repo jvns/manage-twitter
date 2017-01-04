@@ -11,6 +11,25 @@ var oauth = new OAuth.OAuth(
 );
 
 
+function oauthPost(oauth, url, postBody, token, tokenSecret, callback) {
+            oauth.post(
+        "https://api.twitter.com/1.1/" + url,
+        token,
+        tokenSecret,
+        postBody,
+        function(error, data, res) {
+          if(error) {
+            console.log(require('sys').inspect(res));
+            console.log(require('sys').inspect(error));
+            console.log(data);
+          }
+          else {
+            callback(data);
+          }
+        }
+      )
+}
+
 function oauthGet(oauth, url, token, tokenSecret, callback) {
             oauth.get(
         "https://api.twitter.com/1.1/" + url,
@@ -75,10 +94,19 @@ function savedOauthGet(url, profile, callback) {
         db.sqlite.findById(6603532, function(err, user) {
           oauthGet(oauth, url, user.token, user.tokenSecret, callback);
         });
-      
     } else {
       oauthGet(this.secrets.oauth, url, this.secrets.token, this.secrets.tokenSecret, callback);
     }},
+    post: function (url, postData, callback) {
+      if (!this.secrets.oauth) {
+        // todo: hardcoded id here, get the real profile from the session somehow
+        db.sqlite.findById(6603532, function(err, user) {
+          oauthPost(oauth, url, postData, user.token, user.tokenSecret, callback);
+        });
+    } else {
+      oauthPost(this.secrets.oauth, url, postData, this.secrets.token, this.secrets.tokenSecret, callback);
+    }},
+    
     routes: function(app) {
 
       app.get(path,

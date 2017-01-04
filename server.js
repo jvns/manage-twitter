@@ -56,9 +56,10 @@ app.get('/update_friendship',
   require('connect-ensure-login').ensureLoggedIn(),
   function (req, res) {
     var twitter = auth.twitter;
-    console.log(req.query);
+    //req.query['retweets']
     twitter.post(
       "friendships/update.json",
+      req.query,
       function(data) {
         res.send(data);
       }

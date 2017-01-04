@@ -21,7 +21,7 @@ Email: {{ email.value }}<br/>
       <a :href="'https://twitter.com/' + friend.screen_name">@${friend.screen_name}</a>
        -- ${ friend.statuses_count } tweets -- 
        <span v-if="tweet_counts[friend.screen_name] !== null"> ${tweet_counts[friend.screen_name]} recent</span>
-       <span class="retweets" v-if="no_retweets[friend.id] !== 1"> Retweets turned on</span>
+       <span class="retweets" v-if="no_retweets[friend.id] !== 1"> <a :href="'/update_friendship?retweets=false&screen_name=' + friend.screen_name">Turn off retweets </a></span>
     </li>
   </ul>
 </div>
@@ -33,7 +33,6 @@ Email: {{ email.value }}<br/>
   Vue.config.delimiters = ['${', '}']
 
   function groupTimeline(timeline) {
-      console.log(timeline.length);
       var counts = {}
       for (var i = 0; i < timeline.length; i++) {
           var tweet = timeline[i];
@@ -57,7 +56,6 @@ Email: {{ email.value }}<br/>
   function displayFriends(friends, timeline, no_retweets) {
       var tweet_counts = groupTimeline(timeline);
       var no_retweets = makeSet(no_retweets);
-      console.log(no_retweets);
       friends = friends.sort(function(a, b) {
           var c1 = tweet_counts[a.screen_name];
           var c2 = tweet_counts[b.screen_name];
