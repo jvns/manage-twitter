@@ -1,6 +1,23 @@
 var OAuth = require('oauth');
 
 
+function oauthGet(oauth, url, token, tokenSecret, callback) {
+            oauth.get(
+        "https://api.twitter.com/1.1/" + url,
+        token,
+        tokenSecret,
+        function(error, data, res) {
+          if(error) {
+            console.log(require('sys').inspect(res));
+            console.log(require('sys').inspect(error));
+            console.log(data);
+          }
+          else {
+            callback(data);
+          }
+        }
+      )
+}
 
 module.exports = function(passport, db) {
   var secrets = {};
@@ -18,21 +35,7 @@ function savedOauthGet(url, profile, callback) {
     'HMAC-SHA1'
 );
     db.sqlite.findById(profile.id, function(err, user) {
-          oauth.get(
-        "https://api.twitter.com/1.1/" + url,
-        user.token,
-        user.tokenSecret,
-        function(error, data, res) {
-          if(error) {
-            console.log(require('sys').inspect(res));
-            console.log(require('sys').inspect(error));
-            console.log(data);
-          }
-          else {
-            callback(data);
-          }
-        }
-      )
+
     });
 
 
