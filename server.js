@@ -51,6 +51,21 @@ app.get('/no_retweets.json',
     )
   });
 
+
+app.get('/update_friendship',
+  require('connect-ensure-login').ensureLoggedIn(),
+  function (req, res) {
+    var twitter = auth.twitter;
+    console.log(req.query);
+    twitter.post(
+      "friendships/update.json",
+      function(data) {
+        res.send(data);
+      }
+    )
+  });
+
+
 app.get('/home_timeline.json',
   require('connect-ensure-login').ensureLoggedIn(),
   function (req, res) {
