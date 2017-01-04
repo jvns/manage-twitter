@@ -1,5 +1,15 @@
 var OAuth = require('oauth');
 
+var oauth = new OAuth.OAuth(
+    'https://api.twitter.com/oauth/request_token',
+    'https://api.twitter.com/oauth/access_token',
+    process.env.TWITTER_CONSUMER_KEY,
+    process.env.TWITTER_CONSUMER_SECRET,
+    '1.0A',
+    process.env.PROJECT_URL + '/login/twitter/return',
+    'HMAC-SHA1'
+);
+
 
 function oauthGet(oauth, url, token, tokenSecret, callback) {
             oauth.get(
@@ -25,18 +35,6 @@ module.exports = function(passport, db) {
       path = '/login/twitter',
       returnPath = path + '/return';
 function savedOauthGet(url, profile, callback) {
-    var oauth = new OAuth.OAuth(
-    'https://api.twitter.com/oauth/request_token',
-    'https://api.twitter.com/oauth/access_token',
-    process.env.TWITTER_CONSUMER_KEY,
-    process.env.TWITTER_CONSUMER_SECRET,
-    '1.0A',
-    process.env.PROJECT_URL + '/login/twitter/return',
-    'HMAC-SHA1'
-);
-    db.sqlite.findById(profile.id, function(err, user) {
-      oauthGet(oauth, url, user.token, user.tokenSecret, callback);
-    });
 
 
 }
@@ -74,10 +72,13 @@ function savedOauthGet(url, profile, callback) {
     get: function (url, callback) {
       if (!this.secrets.oauth) {
         // todo: hardcoded id here, get the real profile from the session somehow
-        return savedOauthGet(url, {id: 6603532}, callback);
-      }
+        db.sqlite.findById(6603532, function(err, user) {
+          oauthGet(oauth, url, user.token, user.tokenSecret, callback);
+        });
+      
+    } else {
       oauthGet(this.secrets.oauth, url, this.secrets.token, this.secrets.tokenSecret, callback);
-    },
+    }},
     routes: function(app) {
 
       app.get(path,
