@@ -88,17 +88,46 @@
     })
   }
 
-  function getOrCache(cacheId, url, callback) {
+  function getOrCache(cacheId, url, callback, transform) {
       var stored = deserialize(localStorage.getItem(cacheId));
       if (stored) {
           callback(stored);
       } else {
           $.get(url, function(resp) {
               friends = JSON.parse(resp);
+              if (transform) {
+                friends = transform(friends);
+              }
               localStorage.setItem(cacheId, serialize(friends));
               callback(friends);
           })
       }
+  }
+  
+  function filterTimeline(timeline) {
+    console.log("timeline length: ", timeline.length)
+    var tweets_24h = 0
+    var tweets_week = 0;
+    for (var i = 0; i < timeline.length; i++) {
+      created = Date.parse(timeline[i].created_at)
+      if (created > (+ new Date()) - 24 * 60 * 60 * 1000) {
+        tweets_24h += 1;
+      }
+      if (created > (+ new Date()) - 7 * 24 * 60 * 60 * 1000) {
+        tweets_week += 1;
+      }
+    }
+    return {
+      count_24h: tweets_24h,
+      count_week: tweets_week
+    }
+  }
+  
+  function getTimelines(friends) {
+    for (var i = 0; i < friends.length; i++) {
+      var friend = friends[i];
+      getOrCache("timeline_" + friend.screen_name, "/user_timeline.json?screen_name=" + friend.screen_name, function() {}, filterTimeline);
+    }
   }
 
   function main() {
@@ -107,12 +136,13 @@
           getOrCache("home_timeline", "/home_timeline.json", function(timeline) {
               getOrCache("no_retweets", "/no_retweets.json", function(no_retweets) {
                   var app4 = displayFriends(friends, timeline, no_retweets);
-                  
+                  getOrCache("timeline_MagicRecs", "/home_timeline.json", function() {}, function(x) { console.log(x)})
+                  getTimelines(friends;
               })
           })
       })
   }
   $(document).ready(main)
-</script>
+</script> 
 
 {% endblock %}
