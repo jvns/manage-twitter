@@ -1,28 +1,18 @@
-{% extends 'index.html' %}
+{% extends 'base.html' %}
 
 {% block content %}
 
-<p>
-ID: {{ user.id }}<br/>
-Provider: {{ user.provider }}<br/>
-{% if user.username %}
-Username: {{ user.username }}<br/>
-{% endif %}
-Name: {{ user.displayName }}<br/>
-{% for email in user.emails %}
-Email: {{ email.value }}<br/>
-{% endfor %}
-</p>
-
-  <div id="app-4">
-  <ul>
-    <li v-for="friend in friends">
-      <img :src="friend.profile_image_url_https">
-      <a :href="'https://twitter.com/' + friend.screen_name">@${friend.screen_name}</a>
-       -- ${ friend.statuses_count } tweets -- 
+  <div id="app-4" class="col-md-4">
+  <table class="table">
+    <tr v-for="friend in friends">
+    <td>
+      <img :src="friend.profile_image_url_https"></td> <td>
+      <a :href="'https://twitter.com/' + friend.screen_name">@${friend.screen_name}</a></td><td>
+       ${ friend.statuses_count || 0 } tweets </td><td> 
        <span v-if="tweet_counts[friend.screen_name] !== null"> ${tweet_counts[friend.screen_name]} recent</span>
        <span class="retweets" v-if="no_retweets[friend.id] !== 1"> <a :href="'/update_friendship?retweets=false&screen_name=' + friend.screen_name">Turn off retweets </a></span>
-    </li>
+      </td>
+    </tr>
   </ul>
 </div>
 <a href="/logout">Logout</a>
