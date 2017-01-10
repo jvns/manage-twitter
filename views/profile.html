@@ -9,9 +9,17 @@
       <img :src="friend.profile_image_url_https"></td> <td>
       <a :href="'https://twitter.com/' + friend.screen_name">@${friend.screen_name}</a></td><td>
        ${ friend.statuses_count || 0 } tweets </td><td> 
-       <span v-if="tweet_counts[friend.screen_name] !== null"> ${tweet_counts[friend.screen_name]} recent</span>
+<!--       <span v-if="tweet_counts[friend.screen_name] !== null"> ${tweet_counts[friend.screen_name]} recent</span> -->
        <span class="retweets" v-if="no_retweets[friend.id] !== 1"> <a :href="'/update_friendship?retweets=false&screen_name=' + friend.screen_name">Turn off retweets </a></span>
       </td>
+      <td>
+               <span v-if="tweet_info[friend.screen_name]"> ${ tweet_info[friend.screen_name]['count_24h']} tweets today </span>
+
+        </td>
+      <td>
+               <span v-if="tweet_info[friend.screen_name]"> ${ tweet_info[friend.screen_name]['count_week']} tweets this week </span>
+
+        </td>
     </tr>
   </ul>
 </div>
@@ -42,6 +50,12 @@
       }
       return set;
   }
+  
+  function sortByFunction(list, f) {
+    list.sort(function(a, b) {
+      f(a) - f(b)
+    })
+  } 
 
   function displayFriends(friends, timeline, no_retweets) {
       var tweet_counts = groupTimeline(timeline);
@@ -68,6 +82,7 @@
               friends: friends,
               tweet_counts: tweet_counts,
               no_retweets: no_retweets,
+              tweet_info: {}
           },
       });
       return app4;
@@ -105,7 +120,6 @@
   }
   
   function filterTimeline(timeline) {
-    console.log("timeline length: ", timeline.length)
     var tweets_24h = 0
     var tweets_week = 0;
     for (var i = 0; i < timeline.length; i++) {
@@ -123,10 +137,16 @@
     }
   }
   
-  function getTimelines(friends) {
+  function getTimelines(app4, friends) {
     for (var i = 0; i < friends.length; i++) {
       var friend = friends[i];
-      getOrCache("timeline_" + friend.screen_name, "/user_timeline.json?screen_name=" + friend.screen_name, function() {}, filterTimeline);
+      getOrCache("timeline_" + friend.screen_name, "/user_timeline.json?screen_name=" + friend.screen_name, function(data) {
+        Vue.set(app4.tweet_info, friend.screen_name, data);
+        sortByFunction(app4.friends, function(x) {
+          return 0;
+        })
+//        console.log(app4.tweet_info)
+      }, filterTimeline);
     }
   }
 
@@ -137,7 +157,7 @@
               getOrCache("no_retweets", "/no_retweets.json", function(no_retweets) {
                   var app4 = displayFriends(friends, timeline, no_retweets);
                   getOrCache("timeline_MagicRecs", "/home_timeline.json", function() {}, function(x) { console.log(x)})
-                  getTimelines(friends);
+                  getTimelines(app4, friends);
               })
           })
       })
