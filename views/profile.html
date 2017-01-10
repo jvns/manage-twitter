@@ -70,17 +70,32 @@
               no_retweets: no_retweets,
           },
       });
+      return app4;
 
+  }
+  
+  function deserialize(data) {
+    data = JSON.parse(data);
+    if (data && data['updated'] >= (+ new Date()) - 15 * 60 * 1000) {
+      return data['data'];
+    }
+  }
+  
+  function serialize(data) {
+    return JSON.stringify({
+      updated: (+ new Date()),
+      data: data
+    })
   }
 
   function getOrCache(cacheId, url, callback) {
-      var friends = JSON.parse(localStorage.getItem(cacheId));
-      if (friends) {
-          callback(friends);
+      var stored = deserialize(localStorage.getItem(cacheId));
+      if (stored) {
+          callback(stored);
       } else {
           $.get(url, function(resp) {
               friends = JSON.parse(resp);
-              localStorage.setItem(cacheId, resp);
+              localStorage.setItem(cacheId, serialize(friends));
               callback(friends);
           })
       }
@@ -91,7 +106,8 @@
       getOrCache("friends", "/users.json", function(friends) {
           getOrCache("home_timeline", "/home_timeline.json", function(timeline) {
               getOrCache("no_retweets", "/no_retweets.json", function(no_retweets) {
-                  displayFriends(friends, timeline, no_retweets)
+                  var app4 = displayFriends(friends, timeline, no_retweets);
+                  
               })
           })
       })

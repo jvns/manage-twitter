@@ -75,6 +75,17 @@ app.get('/update_friendship',
     )
   });
 
+app.get('/user_timeline.json',
+  require('connect-ensure-login').ensureLoggedIn(),
+  function (req, res) {
+    var twitter = auth.twitter;
+    twitter.get(
+      "statuses/user_timeline.json?count=200&screen_name=" + req.query.screen_name,
+      function(data) {
+        res.send(data);
+      }
+    )
+  });
 
 app.get('/home_timeline.json',
   require('connect-ensure-login').ensureLoggedIn(),
